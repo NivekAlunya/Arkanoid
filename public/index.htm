@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta  charset="utf-8" />
+  <title>Arkanoïd</title>
+  <script src="./js/phaser.js"></script>
+  <link href="./css/styles.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <div id="arcade">
+    <div id="score">
+      <a href="javascript:start()" style="color:#00A;">[Commencer le jeu]</a>
+    </div>
+    <div id="screen">
+    </div>
+    <div class="instructions">
+      Utiliser les flèches <- et -> pour déplacer l'assiette.
+    </div>
+  </div>
+  <script type="text/javascript">
+  var start = (function() {
+    var game = new Phaser.Game(800,600,Phaser.AUTO, 'screen', { preload: preload, create: create, update:update });
+    var bricks, plate, ball;
+    var nBricks = 12;
+    var cursors;
+
+    function preload() {
+      game.load.image('ball', "./images/ball.png");
+      game.load.image('brick', "./images/brick.png");
+      game.load.image('plate', "./images/plate.png");
+    }
+
+    function create() {
+      //html document
+      document.getElementById('score').innerHTML = nBricks + " briques à casser."
+
+      //initialize physics
+      game.physics.startSystem(Phaser.Physics.ARCADE);
+      game.physics.arcade.checkCollision.down = false;
+
+      //bricks
+      bricks = game.add.group();
+      bricks.enableBody = true;
+      var startBrickTop = 24, startBrickLeft = 24;
+      var brickWidth = 64;
+
+      for(i = 0; i < nBricks ; ++i) {
+        var brick = bricks.create(i * brickWidth + startBrickTop,startBrickTop,'brick');
+        brick.body.immovable = true;
+        brick.body.bounce.set(1);
+      }
+
+      //plate
+      plate = game.add.sprite(24, game.world.height - 16, 'plate');
+      game.physics.arcade.enable(plate);
+      plate.body.collideWorldBounds = true;
+      plate.body.bounce.set(1);
+      plate.body.immovable = true;
+
+      //ball
+      ball = game.add.sprite(24, game.world.height - 40, 'ball');
+      game.physics.arcade.enable(ball);
+
+      ball.body.collideWorldBounds = true;
+      ball.body.bounce.set(1);
+      ball.checkWorldBounds = true;
+      ball.events.onOutOfBounds.add(loseBall, this);
+
+      cursors = game.input.keyboard.createCursorKeys();
+
+      ball.body.velocity.x = 200;
+      ball.body.velocity.y = -200;
+
+    }
+
+    //loseBall : ball hits the bottom of the area
+    function loseBall() {
+      alert('Perdu.');
+      location.reload();
+    }
+
+  //update : game loop
+    function update(){
+      game.physics.arcade.collide(ball, plate, ballCollidesPlate, null, this);
+      game.physics.arcade.collide(ball, bricks,ballCollidesBrick, null, this);
+      plate.body.velocity.x = 0
+
+      if (cursors.left.isDown) {
+        plate.body.velocity.x = -300;
+      } else if (cursors.right.isDown) {
+        plate.body.velocity.x = 300;
+      }
+    }
+
+    function ballCollidesBrick(ball, brick) {
+      brick.kill();
+      if (--nBricks == 0) {
+        alert("Gagné");
+        location.reload();
+        return;
+      }
+      document.getElementById('score').innerHTML = nBricks + ' brique' + (nBricks>1 ? 's' : '') + ' à casser.'
+
+    }
+
+    function ballCollidesPlate(ball, plate) {
+      var midPlate =  plate.x + plate.width / 2;;
+      var centerBall = ball.x + ball.width / 2
+      var speed =  (centerBall - midPlate)
+      ball.body.velocity.x = speed * 10;
+    }
+
+  });
+
+  </script>
+
+
+
+</body>
+</html>

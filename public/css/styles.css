@@ -1,0 +1,32 @@
+* {
+  font-size: 16px;
+  color:#0A0A0A;
+}
+body {
+  margin: 0;
+}
+
+div#arcade {
+  margin: 10px;
+}
+
+div#screen {
+  width:800px;
+  height: 600px;
+  margin: auto;
+  border: 2px #AAA solid;
+}
+
+div#score {
+  margin: 20px auto;
+  text-align: center;
+  color:#0D0;
+  font-size: 24px;
+}
+
+div.instructions {
+  margin: 20px 40px 20px 40px;
+  text-align: center;
+  font-style: italic;
+  font-weight: bold;
+}
